@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto p-8">
+  <div class="container mx-auto w-full p-8 lg:w-1/2">
     <h1 class="my-4 text-3xl font-bold">To Do App</h1>
     <!-- Report -->
     <div class="flex flex-wrap gap-4 py-5 text-center">
@@ -31,7 +31,7 @@
 
     <!-- Add To Do -->
     <form
-      @submit.prevent="addTodo"
+      @submit.prevent="addToDoList"
       class="flex flex-wrap items-end gap-2 rounded-lg border p-4 font-medium"
     >
       <div class="flex w-full flex-col sm:w-1/2">
@@ -73,9 +73,9 @@
       <div class="w-1/2">
         <h1 class="my-4 text-3xl font-medium">Todo</h1>
         <div
-          v-for="(list, index) in reversedTodoList"
+          v-for="(list, index) in toDoList"
           :key="index"
-          class="my-2 flex flex-col gap-2 rounded-lg border p-2"
+          class="my-2 flex flex-col-reverse gap-2 rounded-lg border p-2"
         >
           <div class="group flex flex-col gap-2">
             <p class="font-medium">{{ list.name }}</p>
@@ -90,7 +90,7 @@
               </p>
               <div class="flex gap-2">
                 <button
-                  @click="deleteToDo(index)"
+                  @click="deleteToDoList(index)"
                   class="invisible rounded-md bg-red-500 px-2 py-1 font-thin text-white duration-200 ease-in-out hover:bg-red-600 group-hover:visible"
                 >
                   Delete
@@ -109,7 +109,7 @@
       <div class="w-1/2">
         <h1 class="my-4 text-3xl font-medium">Done</h1>
         <div
-          v-for="(list, index) in reversedTodoDone"
+          v-for="(list, index) in toDoDone"
           :key="index"
           class="my-2 flex flex-col gap-2 rounded-lg border p-2"
         >
@@ -145,20 +145,34 @@ export default {
   data() {
     return {
       newTodo: { name: "", priority: "" },
-      todoList: [
+      toDoList: JSON.parse(localStorage.getItem("toDoList")) || [
         { name: "Belanja bahan masakan", priority: "High" },
         { name: "Rapat proyek", priority: "Medium" },
         { name: "Periksa email", priority: "Low" },
       ],
-      todoDone: [
+      toDoDone: JSON.parse(localStorage.getItem("toDoDone")) || [
         { name: "Buat laporan", priority: "High" },
         { name: "Olahraga", priority: "Low" },
       ],
     };
   },
+  watch: {
+    toDoList: {
+      handler(newToDoList) {
+        localStorage.setItem("toDoList", JSON.stringify(newToDoList));
+      },
+      deep: true,
+    },
+    toDoDone: {
+      handler(newToDoDone) {
+        localStorage.setItem("toDoDone", JSON.stringify(newToDoDone));
+      },
+      deep: true,
+    },
+  },
   computed: {
     countPending() {
-      return this.todoList.length;
+      return this.toDoList.length;
     },
     countLowPriority() {
       return this.countPriority("Low");
@@ -169,38 +183,32 @@ export default {
     countHighPriority() {
       return this.countPriority("High");
     },
-    reversedTodoList() {
-      return this.todoList.reverse();
-    },
-    reversedTodoDone() {
-      return this.todoDone.reverse();
-    },
   },
   methods: {
     countPriority(priority) {
       let counts = 0;
-      for (let i = 0; i < this.todoList.length; i++) {
-        if (this.todoList[i].priority == priority) {
+      for (let i = 0; i < this.toDoList.length; i++) {
+        if (this.toDoList[i].priority == priority) {
           counts += 1;
         }
       }
       return counts;
     },
-    addTodo() {
+    addToDoList() {
       if (this.newTodo.name && this.newTodo.priority) {
-        this.todoList.push({ ...this.newTodo });
-        this.newTodo = { name: "", priority: "" };
+        this.toDoList.push({ ...this.newTodo });
+        this.newTodo = { name: "", priority: "" }; // Clear input after adding
       }
     },
     deleteToDoList(index) {
-      this.todoList.splice(index, 1);
+      this.toDoList.splice(index, 1);
     },
     deleteDone(index) {
-      this.todoDone.splice(index, 1);
+      this.toDoDone.splice(index, 1);
     },
     doneToDo(index) {
-      const done = this.todoList.splice(index, 1);
-      this.todoDone.push(done[0]);
+      const done = this.toDoList.splice(index, 1);
+      this.toDoDone.push(done[0]);
     },
     getPriorityClass(priority) {
       let low = false;

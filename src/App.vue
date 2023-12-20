@@ -1,9 +1,7 @@
 <script setup>
-import ToDoList from './components/ToDoList.vue';
-import AddToDo from './components/AddToDo.vue';
+import ToDoList from "./components/ToDoList.vue";
 </script>
 
 <template>
-  <!-- <AddToDo /> -->
   <ToDoList />
 </template>
