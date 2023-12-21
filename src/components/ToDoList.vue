@@ -69,8 +69,8 @@
       </button>
     </form>
     <!-- To Do List -->
-    <div class="container flex gap-4">
-      <div class="w-1/2">
+    <div class="container flex flex-col gap-4 sm:flex-row">
+      <div class="w-full sm:w-1/2">
         <h1 class="my-4 text-3xl font-medium">Todo</h1>
         <div
           v-for="(list, index) in toDoList"
@@ -106,7 +106,7 @@
           </div>
         </div>
       </div>
-      <div class="w-1/2">
+      <div class="w-full sm:w-1/2">
         <h1 class="my-4 text-3xl font-medium">Done</h1>
         <div
           v-for="(list, index) in toDoDone"
