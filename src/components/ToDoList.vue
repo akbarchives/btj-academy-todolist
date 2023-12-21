@@ -35,7 +35,7 @@
       class="flex flex-wrap items-end gap-2 rounded-lg border p-4 font-medium"
     >
       <div class="flex w-full flex-col sm:w-1/2">
-        <label for="name">Todo Name:</label>
+        <label for="name">Todo's Name:</label>
 
         <input
           class="rounded-md border px-4 py-2"
@@ -74,10 +74,10 @@
         <h1
           class="my-4 border border-transparent border-b-gray-200 py-2 text-3xl font-medium"
         >
-          ToDo
+          To Do
         </h1>
         <div
-          v-if="checkToDoList"
+          v-if="!isToDoListEmpty"
           v-for="(list, index) in toDoList"
           :key="index"
           class="my-2 flex flex-col-reverse gap-2 rounded-lg border"
@@ -124,7 +124,7 @@
           Done
         </h1>
         <div
-          v-if="checkToDoDone"
+          v-if="!isToDoDoneEmpty"
           v-for="(list, index) in toDoDone"
           :key="index"
           class="my-2 flex flex-col gap-2 rounded-lg border"
@@ -140,22 +140,34 @@
                 >
                 {{ list.priority }}
               </p>
-              <div class="flex">
+              <div class="flex gap-2">
                 <button
                   @click="deleteDone(index)"
                   class="invisible rounded-md bg-red-500 px-2 py-1 font-medium text-white duration-200 ease-in-out hover:bg-red-600 group-hover:visible"
                 >
                   Delete
                 </button>
+                <button
+                  @click="unDone(index)"
+                  class="invisible rounded-md bg-green-500 px-2 py-1 font-medium text-white duration-200 ease-in-out hover:bg-green-600 group-hover:visible"
+                >
+                  Undone
+                </button>
               </div>
             </div>
           </div>
         </div>
         <div
-          v-else
+          v-else-if="isToDoListEmpty && isToDoDoneEmpty"
           class="my-2 flex flex-col-reverse gap-2 rounded-lg px-2 py-6 text-center text-slate-500"
         >
           <p>Get some rest</p>
+        </div>
+        <div
+          v-else
+          class="my-2 flex flex-col-reverse gap-2 rounded-lg px-2 py-6 text-center text-slate-500"
+        >
+          <p>Let's do it</p>
         </div>
       </div>
     </div>
@@ -205,13 +217,13 @@ export default {
     countHighPriority() {
       return this.countPriority("High");
     },
-    checkToDoList() {
-      if (this.toDoList.length !== 0) {
+    isToDoListEmpty() {
+      if (this.toDoList.length === 0) {
         return true;
       }
     },
-    checkToDoDone() {
-      if (this.toDoDone.length !== 0) {
+    isToDoDoneEmpty() {
+      if (this.toDoDone.length === 0) {
         return true;
       }
     },
@@ -235,12 +247,16 @@ export default {
     deleteToDoList(index) {
       this.toDoList.splice(index, 1);
     },
-    deleteDone(index) {
-      this.toDoDone.splice(index, 1);
-    },
     doneToDo(index) {
       const done = this.toDoList.splice(index, 1);
       this.toDoDone.push(done[0]);
+    },
+    deleteDone(index) {
+      this.toDoDone.splice(index, 1);
+    },
+    unDone(index) {
+      const undone = this.toDoDone.splice(index, 1);
+      this.toDoList.push(undone[0]);
     },
     getPriorityClass(priority) {
       let low = false;
